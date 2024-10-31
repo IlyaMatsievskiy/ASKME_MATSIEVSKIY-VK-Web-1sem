@@ -1,129 +1,46 @@
-<!doctype html>
-<html lang="en">
+{% extends 'layouts/base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap demo</title>
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+{% load static %}
 
-    <style>
-        /* h1 {
-            font-size: 72px;
-        }
+{% block content %}
+<div class="d-flex gap-3 align-items-center">
+    <h1>Settings: Dr. Pepper</h1>
+</div>
 
-        .btn-outline-success {
-            background: black;
-        } */
-    </style>
-</head>
-
-<body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <div class="d-flex w-100 justify-content-between align-items-center">
-                <a class="navbar-brand" href="#">AskPupkin</a>
-
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Ask</button>
-                </form>
-
-                <div class="d-flex gap-1">
-                    <img src="asda.jpg" alt="Avatar" class="img-thumbnail">
-                    <div>
-                        <div>
-                            dr pepper
-                        </div>
-                        <a href="#">settings</a>
-                        <a href="#">log out</a>
-                    </div>
+<div class="row mt-4">
+    <div class="col-9">
+        <form>
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">Login</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" placeholder="dr_pepper" aria-label="Login input">
                 </div>
             </div>
-        </div>
-    </nav>
-
-    <main class="container mt-3">
-        <div class="d-flex gap-3 align-items-center">
-            <h1>Settings: Dr. Pepper</h1>
-        </div>
-
-        <div class="row">
-            <div class="col-9 mt-4">
-              <form>
-                <div class="mb-3 row">
-                  <label class="col-sm-2 col-form-label">Login</label>
-                    <div class="col-sm-4">
-                      <input type="text" class="form-control" placeholder="dr_pepper" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-                    </div>
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">Email</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" placeholder="dr.pepper@mail.ru" aria-label="Email input">
                 </div>
-                <div class="mb-3 row">
-                  <label class="col-sm-2 col-form-label">Email</label>
-                    <div class="col-sm-4">
-                      <input type="text" class="form-control" placeholder="dr.pepper@mail.ru" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-                    </div>
+            </div>
+            <div class="mb-3 row">
+                <label class="col-sm-3 col-form-label">Nickname</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" placeholder="Dr. Pepper" aria-label="Nickname input">
                 </div>
-                <div class="mb-3 row">
-                  <label class="col-sm-2 col-form-label">Nickname</label>
-                    <div class="col-sm-4">
-                      <input type="text" class="form-control" placeholder="Dr. Pepper" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
-                    </div>
-                </div>
-                <div class="row mb-3">
-                  <label for="formFile" class="col-sm-2 col-form-label">Upload avatar</label>
-                  <div class="col-sm-4">
-                    <img src="asda.jpg" alt="Avatar" class="img-thumbnail mb-3" style="width: 150px; height: 150px;">
+            </div>
+            <div class="row mb-3">
+                <label for="formFile" class="col-sm-3 col-form-label">Upload avatar</label>
+                <div class="col-sm-4">
+                    <img src="{% static '/img/jpg.jpg' %}" alt="Avatar" class="img-thumbnail mb-3" style="width: 150px; height: 150px;">
                     <input class="form-control" type="file" id="formFile">
-                  </div>
                 </div>
-                <div class="row mb-3">
-                  <div class="col-sm-11 offset-sm-2">
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-11 offset-sm-3">
                     <button class="btn btn-outline-success" type="submit">Save</button>
-                  </div>
                 </div>
-              </form>
             </div>
-            <div class="col">
-                <section class="mb-3">
-                    <h2>Popular Tags</h2>
-                    <div>
-                        <span class="badge text-bg-primary">Primary</span>
-                        <span class="badge text-bg-secondary">Secondary</span>
-                        <span class="badge text-bg-success">Success</span>
-                        <span class="badge text-bg-danger">Danger</span>
-                        <span class="badge text-bg-warning">Warning</span>
-                        <span class="badge text-bg-info">Info</span>
-                        <span class="badge text-bg-light">Light</span>
-                        <span class="badge text-bg-dark">Dark</span>
-                    </div>
-                </section>
-
-                <section>
-                    <h2>Best members</h2>
-                    <div>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item"><a href="#">Member</a></li>
-                            <li class="list-group-item"><a href="#">Member</a></li>
-                            <li class="list-group-item"><a href="#">Member</a></li>
-                            <li class="list-group-item"><a href="#">Member</a></li>
-                            <li class="list-group-item"><a href="#">Member</a></li>
-                        </ul>
-                    </div>
-                </section>
-
-            </div>
-
-        </div>
-
-
-    </main>
-    <script src="../static/js/bootstrap.min.js"></script>
-</body>
-
-</html>
+        </form>
+    </div>
+</div>
+{% endblock %}
