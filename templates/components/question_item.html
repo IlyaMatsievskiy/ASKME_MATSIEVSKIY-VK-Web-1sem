@@ -7,7 +7,7 @@
                 <div class="border mb-2" style="height: 100px">
                     <img src="{% static '/img/jpg.jpg' %}" alt="Avatar" class="img-fluid">
                 </div>
-                <input class="form-control" type="number" value="5" placeholder="Default input"
+                <input class="form-control" type="number" value="{{ question.likes_count }}" placeholder="Default input"
                     aria-label="default input example">
 
             </div>
@@ -15,12 +15,12 @@
                 <h5 class="card-title"><a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a></h5>
                 <p class="card-text">{{ question.content }}</p>
                 <div class="d-flex gap-5">
-                        <a href="{% url 'question' question_id=question.id %}" class="card-link">Answers (10)</a>
+                        <a href="{% url 'question' question_id=question.id %}" class="card-link">Answers ({{ question.answers_number }})</a>
                         <div>
 
                             Tags:
-                            {% for tag in question.tags%}
-                            {% include 'components/question_tags.html' %}
+                            {% for tag in question.tags.all %}
+                                {% include 'components/question_tags.html' %}
                             {% endfor %}
                         </div>
                     </div>

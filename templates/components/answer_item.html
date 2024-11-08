@@ -7,12 +7,12 @@
                 <div class="border mb-2" style="height: 100px">
                     <img src="{% static '/img/jpg.jpg' %}" alt="Avatar" class="img-fluid">
                 </div>
-                <input class="form-control" type="number" value="5" placeholder="Default input"
+                <input class="form-control" type="number" value="{{ answer.likes_count }}" placeholder="Default input"
                     aria-label="default input example">
 
             </div>
             <div class="col-9">
-                <p class="card-text">{{ answer.content }}</p>
+                <p class="card-text">{{ answer }}</p>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1">
                     <label class="form-check-label" for="flexCheckDefault1">

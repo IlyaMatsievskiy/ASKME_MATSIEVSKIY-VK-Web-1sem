@@ -6,7 +6,7 @@
             <div class="border mb-2" style="height: 170px">
                 <img src="{% static '/img/jpg.jpg' %}" alt="Avatar" class="img-fluid">
             </div>
-            <input class="form-control" type="number" value="5" placeholder="Default input"
+            <input class="form-control" type="number" value="{{ question.likes_count }}" placeholder="Default input"
                 aria-label="default input example">
 
         </div>
@@ -17,8 +17,8 @@
                     <div>
 
                         Tags:
-                        {% for tag in question.tags%}
-                        {% include 'components/question_tags.html' %}
+                        {% for tag in question.tags.all %}
+                            {% include 'components/question_tags.html' %}
                         {% endfor %}
                     </div>
                 </div>
