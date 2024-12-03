@@ -4,16 +4,19 @@
     <div class="card-body">
         <div class="row">
             <div class="col-3">
-                <div class="border mb-2" style="height: 100px">
-                    <img src="{% static '/img/jpg.jpg' %}" alt="Avatar" class="img-fluid">
+                <div class="border mb-1 d-inline-block">
+                    <img src="{% if question.author.avatar %}{{ question.author.avatar.url }}{% else %}/static/img/jpg.jpg{% endif %}"
+     alt="Avatar" class="img-thumbnail" style="height: 100px;">
                 </div>
+                <div class="border mb-1 d-inline-block">
                 <input class="form-control" type="number" value="{{ question.likes_count }}" placeholder="Default input"
                     aria-label="default input example">
+                </div>
 
             </div>
             <div class="col-9">
                 <h5 class="card-title"><a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a></h5>
-                <p class="card-text">{{ question.content }}</p>
+                <p class="card-text">{{ question.text }}</p>
                 <div class="d-flex gap-5">
                         <a href="{% url 'question' question_id=question.id %}" class="card-link">Answers ({{ question.answers_number }})</a>
                         <div>

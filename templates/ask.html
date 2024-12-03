@@ -1,45 +1,17 @@
 {% extends 'layouts/base.html' %}
-
-{% block navbar %}
-<div>
-    <a href="{% url 'login' %}">log in</a>  {# переопределение шаблона navbar для страниц, где пользователь не авторизован #}
-    <a href="{% url 'signup' %}">sign up</a>
-</div>
-{% endblock %}
+{% load bootstrap5 %}
 
 {% block content %}
 
 <div class="d-flex gap-3 align-items-center">
     <h1>New Questions</h1>
 </div>
-<div class="mb-3 row">
-    <label for="inputText" class="col-sm-1 col-form-label">Title</label>
-    <div class="col-sm-10">
-      <textarea class="form-control"  id="inputText" rows="1" placeholder="Enter Title" aria-label="Enter Title" aria-describedby="basic-addon2"></textarea>
-    </div>
-</div>
-
-<div class="mb-3 row">
-    <label for="inputText" class="col-sm-1 col-form-label">Text</label>
-    <div class="col-sm-10">
-      <textarea class="form-control"  id="inputText" rows="15" placeholder="Enter Text" aria-label="Enter Text" aria-describedby="basic-addon2"></textarea>
-    </div>
-</div>
-
-<div class="mb-3 row">
-    <label for="inputText" class="col-sm-1 col-form-label">Tags</label>
-    <div class="col-sm-10">
-      <textarea class="form-control"  id="inputText" rows="1" placeholder="Enter Tags" aria-label="Enter Tags" aria-describedby="basic-addon2"></textarea>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-1"></div> <!-- Пустая колонка для отступа слева -->
-    <div class="col-sm-10">
-        <form class="d-flex" role="ask">
-            <button class="btn btn-outline-success" type="submit">Ask</button>
-        </form>
-    </div>
-</div>
+<form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <button class="btn btn-outline-success" type="submit">ASK!</button>
+    {% endbuttons %}
+</form>
 
 {% endblock %}

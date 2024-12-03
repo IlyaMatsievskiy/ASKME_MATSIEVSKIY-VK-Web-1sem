@@ -1,11 +1,5 @@
 {% extends 'layouts/base.html' %}
-
-{% block navbar %}
-    <div class="d-flex gap-1">
-        <a href="{% url 'login' %}">log in</a>
-        <a href="{% url 'signup' %}">sign up</a>
-    </div>
-{% endblock %}
+{% load bootstrap5 %}
 
 {% block content %}
 <div class="d-flex gap-3 align-items-center">
@@ -14,31 +8,45 @@
 
 <div class="row">
     <div class="col-9 mt-1">
-        <p style="color: red">Sorry, wrong password!</p>
-        <form>
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label">Login</label>
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" placeholder="Enter your login here">
-                </div>
-            </div>
-            <div class="mb-3 row">
-                <label class="col-sm-2 col-form-label">Password</label>
-                <div class="col-sm-4">
-                    <input type="password" class="form-control" placeholder="········">
-                </div>
-            </div>
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+<!--            невидимое поле для редиректа-->
+            <input type="hidden" name="continue" value="{{ request.GET.continue|default:'index' }}">
+
+            {% buttons %}
+                <button class="btn btn-outline-success" type="submit">Log in!</button>
+            {% endbuttons %}
             <div class="row mb-3">
-                <div class="col-sm-11 offset-sm-2">
-                    <button class="btn btn-outline-success" type="submit">Log in!</button>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-sm-11 offset-sm-2">
+                <div class="col-sm-11 offset-sm">
                     <p><a href="{% url 'signup' %}" class="link-primary">create new account</a></p>
                 </div>
             </div>
         </form>
+<!--        <form action="{% url 'login' %}" method="post">-->
+<!--            <div class="mb-3 row">-->
+<!--                <label class="col-sm-2 col-form-label">Login</label>-->
+<!--                <div class="col-sm-4">-->
+<!--                    <input type="text" class="form-control" placeholder="Enter your login here" name="username">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="mb-3 row">-->
+<!--                <label class="col-sm-2 col-form-label">Password</label>-->
+<!--                <div class="col-sm-4">-->
+<!--                    <input type="password" class="form-control" placeholder="········" name="password">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="row mb-3">-->
+<!--                <div class="col-sm-11 offset-sm-2">-->
+<!--                    <button class="btn btn-outline-success" type="submit">Log in!</button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="row mb-3">-->
+<!--                <div class="col-sm-11 offset-sm-2">-->
+<!--                    <p><a href="{% url 'signup' %}" class="link-primary">create new account</a></p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </form>-->
     </div>
 </div>
 

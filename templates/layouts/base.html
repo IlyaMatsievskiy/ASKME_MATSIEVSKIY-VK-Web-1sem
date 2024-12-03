@@ -32,22 +32,29 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <form class="d-flex" role="search">
+                <form class="d-flex" role="search" action="{% url 'ask' %}" method="get">
+                    {% csrf_token %}
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Ask</button>
                 </form>
 
                 <div class="d-flex align-items-center gap-2">
-                    {% block navbar %}  {# делаем отдельный блок для переопределения navbar #}
-                        <img src="{% static '/img/jpg.jpg' %}" alt="Avatar" class="img-thumbnail" style="height: 100px;">
+                    {% if request.user.is_authenticated %}
+                        <img src="{% if request.user.profile.avatar %}{{ request.user.profile.avatar.url }}{% else %}/static/img/jpg.jpg{% endif %}"
+     alt="Avatar" class="img-thumbnail" style="height: 100px;">
                             <div class="d-flex flex-column" style="height: 80px; justify-content: space-between;">
-                                <span style="vertical-align: top;">Dr. pepper</span>
+                                <span style="vertical-align: top;">{{ request.user.profile.nickname }}</span>
                                 <div>
-                                    <a href="{% url 'settings' %}" class="me-2">settings</a>
-                                    <a href="{% url 'login' %}">log out</a>
+                                    <a href="{% url 'settings' %}" class="me-2">Settings</a>
+                                    <a href="{% url 'logout' %}?continue={{ request.get_full_path }}">Log out</a>
                                 </div>
                             </div>
-                    {% endblock %}
+                    {% else %}
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'login' %}?continue={{ request.get_full_path }}">Log in</a>
+                            <a href="{% url 'signup' %}">Sign up</a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

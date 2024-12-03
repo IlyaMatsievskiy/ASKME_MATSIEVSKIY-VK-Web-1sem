@@ -1,5 +1,9 @@
+import os
+
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.template.context_processors import request
 from django.urls import reverse
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
@@ -7,12 +11,34 @@ from django.dispatch import receiver
 
 # Create your models here.
 
-
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')  # При удалении пользователя удалится и профиль
+    nickname = models.CharField(max_length=50, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
     def __str__(self):
-        return self.user.username
+        return self.nickname or self.user.username
+
+    def save(self, *args, **kwargs):
+        # Проверяем, существует ли объект и есть ли старая аватарка
+        if self.pk:
+            old_avatar = Profile.objects.filter(pk=self.pk).first().avatar
+            if old_avatar and self.avatar != old_avatar:  # Если аватарка меняется
+                old_avatar_path = os.path.join(settings.MEDIA_ROOT, old_avatar.name)
+                if os.path.isfile(old_avatar_path):  # Удаляем только физически существующий файл
+                    os.remove(old_avatar_path)
+
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        # Удаляем аватарку при удалении профиля
+        if self.avatar:
+            avatar_path = os.path.join(settings.MEDIA_ROOT, self.avatar.name)
+            if os.path.isfile(avatar_path):
+                os.remove(avatar_path)
+
+        super().delete(*args, **kwargs)
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -40,7 +66,7 @@ class AnswerManager(models.Manager):
 
 class Question(models.Model):
     title = models.CharField(max_length=255)
-    content = models.TextField()
+    text = models.TextField()
     tags = models.ManyToManyField(Tag, related_name='questions')
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='questions')
@@ -115,14 +141,15 @@ class AnswerLike(models.Model):
         self.answer.save()
         super().delete(*args, **kwargs)
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         if not hasattr(instance, 'profile'): #если еще не создан
+#             Profile.objects.create(user=instance)
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.profile.save()
 
 
 @receiver(post_save, sender=Answer)

@@ -1,17 +1,12 @@
 {% extends 'layouts/base.html' %}
+{% load bootstrap5 %}
 
 {% load static %}
-
-{% block navbar %}
-<div>
-    <a href="{% url 'login' %}">log in</a>  {# переопределение шаблона navbar для страниц, где пользователь не авторизован #}
-    <a href="{% url 'signup' %}">register</a>
-</div>
-{% endblock %}
 
 {% block content %}
 {% include 'components/big_question_item.html' %}
 <hr>
+
 
 <div class="d-flex flex-column gap-3">
     {% for answer in answers %}
@@ -23,12 +18,13 @@
 
 <hr>
 <div class="mb-3 row">
-    <div class="col-sm-14">
-      <textarea class="form-control"  id="inputText" rows="5" placeholder="Enter your answer here." aria-label="Enter Title" aria-describedby="basic-addon2"></textarea>
-    </div>
     <div class="row-3 gap-3">
-        <form class="d-flex mt-3" role="ask">
+        <form method="post" >
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% buttons %}
                 <button class="btn btn-outline-success" type="submit">Answer</button>
+            {% endbuttons %}
         </form>
     </div>
 </div>
