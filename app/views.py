@@ -5,13 +5,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_protect
 
 from .models import Answer, Question, Tag, Profile
 from .forms import LoginForm, SignUpForm, SettingsForm, AskForm, AnswerForm
 
 TAGS = Tag.objects.all()
 MEMBERS = Profile.objects.all()
-page_count = 2
+page_count = 10
 
 
 def paginate(object_list, request, per_page=page_count):
@@ -58,6 +59,7 @@ def question(request, question_id):
                   context={"question": question, 'answers': page_obj, 'members': MEMBERS[0:5], 'tags': TAGS[0:5],
                            'page_obj': page_obj, 'form': form})
 
+@csrf_protect
 @login_required()
 def ask(request):
     if request.method == "POST":
@@ -82,6 +84,7 @@ def ask(request):
 def layouts(request):
     return render(request, template_name = 'layouts/base.html', context={'members': MEMBERS[0:5], 'tags': TAGS})
 
+@csrf_protect
 def login(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
@@ -98,15 +101,14 @@ def login(request):
         form = LoginForm()
     return render(request, template_name='login.html', context={'members': MEMBERS[0:5], 'tags': TAGS[0:5], 'form': form}) #используем бутстрап 5 с формами
 
+@csrf_protect
 @login_required()
 def logout(request): #удаляет куки с id сессии
     auth.logout(request)
     referer = request.META.get('HTTP_REFERER', reverse('index')) #вычисляем адрес прошлой страницы, если не задан, то на индекс
     return HttpResponseRedirect(referer)
 
-# def signup(request):
-#     return render(request, template_name = 'signup.html', context={'members': MEMBERS[0:5], 'tags': TAGS[0:5]})
-
+@csrf_protect
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST, request.FILES)
@@ -119,6 +121,7 @@ def signup(request):
 
     return render(request, 'signup.html', context={'members': MEMBERS[0:5], 'tags': TAGS[0:5], 'form': form})
 
+@csrf_protect
 @login_required #перекидываем в логин не авторизованных пользователей
 def settings(request):
     if request.method == 'POST':
@@ -139,3 +142,5 @@ def tag(request, tag_name):
 def hot(request):
     page_obj = paginate(Question.objects.best(), request)
     return render(request, template_name = 'hot.html', context={'hot_questions': page_obj, 'members': MEMBERS[0:5], 'tags': TAGS[0:5], 'page_obj': page_obj})
+
+
