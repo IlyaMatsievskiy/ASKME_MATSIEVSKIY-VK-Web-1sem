@@ -1,13 +1,13 @@
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
 
-from .models import Answer, Question, Tag, Profile
+from .models import Answer, Question, Tag, Profile, QuestionLike, AnswerLike
 from .forms import LoginForm, SignUpForm, SettingsForm, AskForm, AnswerForm
 
 TAGS = Tag.objects.all()
@@ -143,4 +143,72 @@ def hot(request):
     page_obj = paginate(Question.objects.best(), request)
     return render(request, template_name = 'hot.html', context={'hot_questions': page_obj, 'members': MEMBERS[0:5], 'tags': TAGS[0:5], 'page_obj': page_obj})
 
+@csrf_protect
+@login_required
+def question_like(request, question_id):
+    if request.method == 'POST':
+        question = get_object_or_404(Question, pk=question_id)
 
+        existing_like = QuestionLike.objects.filter(question=question, user=request.user.profile).first()
+
+        if existing_like:
+            existing_like.delete()
+            likes_count = QuestionLike.objects.filter(question=question).count()
+
+            # Обновляем поле likes_count у вопроса
+            question.likes_count = likes_count
+            question.save()
+            return JsonResponse({'count': question.likes_count})
+
+        else:
+            QuestionLike.objects.create(question=question, user=request.user.profile)
+            likes_count = QuestionLike.objects.filter(question=question).count()
+
+            # Обновляем поле likes_count у вопроса
+            question.likes_count = likes_count
+            question.save()
+            return JsonResponse({'count': question.likes_count})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@csrf_protect
+@login_required
+def answer_like(request, answer_id):
+    if request.method == 'POST':
+        answer = get_object_or_404(Answer, pk=answer_id)
+
+        existing_like = AnswerLike.objects.filter(answer=answer, user=request.user.profile).first()
+
+        if existing_like:
+            existing_like.delete()
+            likes_count = AnswerLike.objects.filter(answer=answer).count()
+
+            answer.likes_count = likes_count
+            answer.save()
+            return JsonResponse({'count': answer.likes_count})
+
+        else:
+            AnswerLike.objects.create(answer=answer, user=request.user.profile)
+            likes_count = AnswerLike.objects.filter(answer=answer).count()
+
+            answer.likes_count = likes_count
+            answer.save()
+            return JsonResponse({'count': answer.likes_count})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@csrf_protect
+@login_required
+def mark_correct(request, answer_id):
+    if request.method == 'POST':
+        answer = get_object_or_404(Answer, pk=answer_id)
+
+        if answer.question.author != request.user.profile:
+            return JsonResponse({'error': 'You are not the author of the question'}, status=403)
+
+        answer.is_correct = not answer.is_correct
+        answer.save()
+
+        return JsonResponse({'is_correct': answer.is_correct})
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)

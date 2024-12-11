@@ -57,11 +57,11 @@ class QuestionManager(models.Manager):
 
 class AnswerManager(models.Manager):
     def best(self):
-        # return self.order_by('likes_count')
+        # return self.order_by('-is_correct', '-likes_count')
         return self.all()
         #по умолчанию добавил сортировку в Answer в классе Meta
     def newest(self):
-        return self.order_by('-created_at')
+        return self.order_by('-is_correct', '-created_at') #сначала верные
 
 
 class Question(models.Model):
@@ -94,6 +94,7 @@ class Answer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(Profile, on_delete=models.SET_NULL, null=True, related_name='answers')
     likes_count = models.IntegerField(default=0)
+    is_correct = models.BooleanField(default=False)
 
     objects = AnswerManager()
     def __str__(self):
@@ -105,7 +106,7 @@ class Answer(models.Model):
         ]
         # вместо этого можно использовать db_index=True в likes_count
 
-        ordering = ['-likes_count']
+        ordering = ['-is_correct', '-likes_count'] #сначала будут показываться все верные, а потом уже по лайкам
 
 class QuestionLike(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='question_likes')

@@ -10,6 +10,7 @@
 </div>
 
 <div class="d-flex flex-column gap-3">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     {% for question in questions %}
 
     {% include 'components/question_item.html' %}

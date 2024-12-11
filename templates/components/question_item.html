@@ -1,20 +1,26 @@
 {% load static %}
 
-<div class="card w-100" style="width: 18rem;">
+<div class="card w-100 border border-2 p-2" style="width: 16rem; max-width: 98%;">
     <div class="card-body">
         <div class="row">
-            <div class="col-3">
-                <div class="border mb-1 d-inline-block">
-                    <img src="{% if question.author.avatar %}{{ question.author.avatar.url }}{% else %}/static/img/jpg.jpg{% endif %}"
-     alt="Avatar" class="img-thumbnail" style="height: 100px;">
+            <div class="col-auto">
+                <div class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                    <div class="border border-secondary mb-3 d-inline-block">
+                        <img src="{% if question.author.avatar %}{{ question.author.avatar.url }}{% else %}/static/img/jpg.jpg{% endif %}"
+                             alt="Avatar" class="img-thumbnail" style="height: 100px;">
+                    </div>
                 </div>
-                <div class="border mb-1 d-inline-block">
-                <input class="form-control" type="number" value="{{ question.likes_count }}" placeholder="Default input"
-                    aria-label="default input example">
+                 <div class="like-section d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-success" data-type="question" data-id="{{ question.id }}" type="button" style="display: inline-flex; align-items: center;">
+                        👍
+                    </button>
+                    <span class="rating">Likes:</span>
+                     <span class="rating">{{ question.likes_count }}</span>
                 </div>
 
+
             </div>
-            <div class="col-9">
+            <div class="col">
                 <h5 class="card-title"><a href="{% url 'question' question_id=question.id %}">{{ question.title }}</a></h5>
                 <p class="card-text">{{ question.text }}</p>
                 <div class="d-flex gap-5">

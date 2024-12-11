@@ -7,8 +7,13 @@
                 <img src="{% if question.author.avatar %}{{ question.author.avatar.url }}{% else %}/static/img/jpg.jpg{% endif %}"
      alt="Avatar" class="img-thumbnail" style="height: 170px;">
             </div>
-            <input class="form-control" type="number" value="{{ question.likes_count }}" placeholder="Default input"
-                aria-label="default input example">
+            <div class="like-section d-flex align-items-center gap-2">
+                    <button class="btn btn-outline-success" data-type='question' data-id="{{ question.id }}" type="button" style="display: inline-flex; align-items: center;">
+                        👍
+                    </button>
+                    <span class="rating">Likes:</span>
+                    <span class="rating">{{ question.likes_count }}</span>
+                </div>
 
         </div>
         <div class="col-9">

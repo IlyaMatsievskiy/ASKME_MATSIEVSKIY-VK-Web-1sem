@@ -6,7 +6,7 @@
 <div class="d-flex gap-3 align-items-center">
     <h1>Tag:{{tag_name}}</h1>
 </div>
-
+<meta name="csrf-token" content="{{ csrf_token }}">
 {% for question in questions %}
 
 {% include 'components/question_item.html' %}
