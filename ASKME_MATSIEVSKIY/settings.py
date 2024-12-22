@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'django_extensions',
     'bootstrap5',
 ]
@@ -150,3 +151,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 LOGIN_URL = '/login' #при попытке обращения к старнице, на которую нельзя без авторизации
+
+#настройки для real-time ответов
+CENTRIFUGO_TOKEN_HMAC_SECRET_KEY = "my_secret"
+CENTRIFUGO_WS_URL = "ws://127.0.0.1:8010/connection/websocket"
+
+CENTRIFUGO_API_URL = "http://127.0.0.1:8010/api"
+CENTRIFUGO_API_KEY = "my_api_key"
+
+#кэширование
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "/var/tmp/django_cache",
+    }
+}

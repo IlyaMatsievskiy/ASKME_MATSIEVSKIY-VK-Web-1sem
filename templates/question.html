@@ -7,13 +7,14 @@
 {% include 'components/big_question_item.html' %}
 <hr>
 
+<div id="answers-container" class="d-flex flex-column gap-3">
+    <div class="d-flex flex-column gap-3">
+        {% for answer in answers %}
 
-<div class="d-flex flex-column gap-3">
-    {% for answer in answers %}
+        {% include 'components/answer_item.html' %}
 
-    {% include 'components/answer_item.html' %}
-
-    {% endfor %}
+        {% endfor %}
+    </div>
 </div>
 
 <hr>
@@ -30,5 +31,75 @@
 </div>
 
 {% include 'components/pagination.html' %}
+
+  <script src="https://unpkg.com/centrifuge@5.0.1/dist/centrifuge.js"></script>
+  <script type="text/javascript">
+<!--    const container = document.getElementById('counter');-->
+
+    const centrifuge = new Centrifuge("{{ centrifugo.ws_url }}", {
+        token: "{{ centrifugo.token }}"
+    });
+
+    centrifuge.on('connecting', function (ctx) {
+        console.log(`connecting: ${ctx.code}, ${ctx.reason}`);
+    }).on('connected', function (ctx) {
+        console.log(`connected over ${ctx.transport}`);
+    }).on('disconnected', function (ctx) {
+        console.log(`disconnected: ${ctx.code}, ${ctx.reason}`);
+    }).connect();
+
+    const sub = centrifuge.newSubscription('{{ centrifugo.channel }}');
+
+    sub.on('publication', function (ctx) {
+        const data = ctx.data;  // Данные ответа из Centrifugo
+
+        // Проверяем, что данные правильные
+        console.log('New answer data:', data);
+
+        // Динамически создаем HTML для нового ответа
+        const answerHtml = `
+            <div class="card w-100" style="width: 18rem;">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="border mb-2 d-inline-block">
+                                <img src="${data.author.avatar ? data.author.avatar : '{% static 'img/jpg.jpg' %}'}"
+                                     alt="Avatar" class="img-thumbnail" style="height: 100px;">
+                            </div>
+                            ${data.author.name}
+                            <div class="like-section d-flex align-items-center gap-2">
+                                <button class="btn btn-outline-success" data-type="answer" data-id="${data.id}" type="button"
+                                        style="display: inline-flex; align-items: center;">
+                                    👍
+                                </button>
+                                <span class="rating">Likes:</span>
+                                <span class="rating">${data.likes_count}</span>
+                            </div>
+                        </div>
+                        <div class="col-9">
+                            <p class="card-text">${data.content}</p>
+                            ${data.is_correct ?
+                                `<div class="correct-answer-sticker d-flex align-items-center gap-2">
+                                    <span class="badge bg-success">✅ Correct!</span>
+                                </div>`
+                                : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Вставляем новый HTML в начало контейнера с ответами
+        const container = document.getElementById("answers-container");
+        container.insertAdjacentHTML("afterbegin", answerHtml);
+    }).on('subscribing', function (ctx) {
+        console.log(`subscribing: ${ctx.code}, ${ctx.reason}`);
+    }).on('subscribed', function (ctx) {
+        console.log('subscribed', ctx);
+    }).on('unsubscribed', function (ctx) {
+        console.log(`unsubscribed: ${ctx.code}, ${ctx.reason}`);
+    }).subscribe();
+
+  </script>
 
 {% endblock %}

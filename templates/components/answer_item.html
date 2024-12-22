@@ -5,35 +5,34 @@
         <div class="row">
             <div class="col-3">
                 <div class="border mb-2 d-inline-block">
-                   <img src= "{% if answer.author.avatar %}{{ answer.author.avatar.url }}{% else %}/static/img/jpg.jpg{% endif %}" alt="Avatar" class="img-thumbnail" style="height: 100px;">
+                   <img src="{% if answer.author.avatar %}{{ answer.author.avatar.url }}{% else %}{% static 'img/jpg.jpg' %}{% endif %}"
+                        alt="Avatar" class="img-thumbnail" style="height: 100px;">
                 </div>
                 {{ answer.author }}
                 <div class="like-section d-flex align-items-center gap-2">
-                    <button class="btn btn-outline-success" data-type='answer' data-id="{{ answer.id }}" type="button" style="display: inline-flex; align-items: center;">
+                    <button class="btn btn-outline-success" data-type="answer" data-id="{{ answer.id }}" type="button"
+                            style="display: inline-flex; align-items: center;">
                         👍
                     </button>
                     <span class="rating">Likes:</span>
                     <span class="rating">{{ answer.likes_count }}</span>
                 </div>
-
             </div>
             <div class="col-9">
                 <p class="card-text">{{ answer.content }}</p>
-                <div class="form-check correct-section">
-                    {% if request.user.is_authenticated and answer.question.author == request.user.profile %}
+                {% if request.user.is_authenticated and answer.question.author == request.user.profile %}
+                    <div class="form-check correct-section">
                         <input class="form-check-input correct-check" data-type="correct" data-id="{{ answer.id }}"
                                type="checkbox" id="flexCheckDefault1" {% if answer.is_correct %}checked{% endif %}>
-                        <label class="form-check-label" for="flexCheckDefault1">
-                            Correct!
-                        </label>
-                    {% else %}
-                        {% if answer.is_correct %}
-                            <div class="correct-answer-sticker d-flex align-items-center gap-2">
-                                <span class="badge bg-success">✅ Correct!</span>
-                            </div>
-                        {% endif %}
+                        <label class="form-check-label" for="flexCheckDefault1">Correct!</label>
+                    </div>
+                {% else %}
+                    {% if answer.is_correct %}
+                        <div class="correct-answer-sticker d-flex align-items-center gap-2">
+                            <span class="badge bg-success">✅ Correct!</span>
+                        </div>
                     {% endif %}
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

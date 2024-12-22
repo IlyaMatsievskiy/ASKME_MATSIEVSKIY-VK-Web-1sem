@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 from app import views
-
+from app.views import search
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -17,4 +17,5 @@ urlpatterns = [
     path('question/<int:question_id>/like/', views.question_like, name='question_like'),
     path('answer/<int:answer_id>/like/', views.answer_like, name='answer_like'),
     path('answer/<int:answer_id>/mark_correct/', views.mark_correct, name='mark_correct'),
+    path('search/', search, name='search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

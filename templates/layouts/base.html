@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap demo</title>
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
     <style>
@@ -18,6 +19,39 @@
             background: black;
         } */
     </style>
+
+    <style>
+        .suggestions-box {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            background: white;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 400px;
+            z-index: 1000;
+            padding: 5px;
+            max-height: 300px; /* Ограничение высоты */
+            overflow-y: auto; /* Прокрутка */
+            display: none; /* По умолчанию скрыто */
+        }
+
+        .suggestions-box a {
+            display: block;
+            padding: 5px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .suggestions-box a:hover {
+            background: #f0f0f0;
+        }
+    </style>
+
+
+
+
+
 </head>
 
 <body>
@@ -31,6 +65,12 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+<!--                <form class="d-flex" role="search" action="{% url 'ask' %}" method="get">-->
+<!--                    {% csrf_token %}-->
+<!--                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">-->
+<!--                    <button class="btn btn-outline-success" type="submit">Ask</button>-->
+<!--                </form>-->
 
                 <form class="d-flex" role="search" action="{% url 'ask' %}" method="get">
                     {% csrf_token %}
@@ -106,6 +146,56 @@
     <script src="{% static '/js/bootstrap.min.js' %}"></script>
     <script src="{% static '/js/likes.js' %}"></script>
     <script src="{% static '/js/correct.js' %}"></script>
+
+    <script>
+        const searchInput = document.querySelector('input[type="search"]');
+        const suggestionsBox = document.createElement('div');
+        suggestionsBox.classList.add('suggestions-box');
+        document.body.appendChild(suggestionsBox);
+
+        let debounceTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                const query = searchInput.value.trim();
+                if (query) {
+                    suggestionsBox.style.display = 'block'; // Показываем suggestionsBox при вводе текста
+
+                    fetch(`/search/?q=${encodeURIComponent(query)}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.results.length > 0) {
+                            suggestionsBox.innerHTML = data.results
+                                .map(result => `<a href="${result.url}">${result.title}</a>`)
+                                .join('');
+                        } else {
+                            suggestionsBox.innerHTML = '<p style="padding: 5px; color: #888;">Ничего не найдено</p>';
+                        }
+                        const rect = searchInput.getBoundingClientRect();
+                        suggestionsBox.style.left = `${rect.left}px`;
+                        suggestionsBox.style.width = `${rect.width}px`;
+
+                        // Проверим, не выходит ли box за пределы экрана
+                        const boxRect = suggestionsBox.getBoundingClientRect();
+                        const windowHeight = window.innerHeight;
+                        if (boxRect.bottom > windowHeight) {
+                            suggestionsBox.style.top = `${rect.top - boxRect.height - 5}px`; // Позиционируем сверху, если блок выходит за экран
+                        } else {
+                            suggestionsBox.style.top = `${rect.bottom + window.scrollY}px`; // Иначе оставляем снизу
+                        }
+                    });
+                } else {
+                    suggestionsBox.style.display = 'none'; // Скрываем suggestionsBox, если пустой запрос
+                    suggestionsBox.innerHTML = ''; // Очищаем содержимое
+                }
+            }, 300);
+        });
+    </script>
+
 
 </body>
 

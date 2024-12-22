@@ -1,12 +1,14 @@
 import os
 
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.contrib.auth.models import User
 from django.template.context_processors import request
 from django.urls import reverse
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
+from django.contrib.postgres.search import SearchVectorField, SearchVector
 
 
 # Create your models here.
@@ -73,6 +75,8 @@ class Question(models.Model):
     #при удалении профиля автора, сам вопрос не удаляется, просто поля автора переходит в NULL
     likes_count = models.IntegerField(default=0)
     answers_number = models.IntegerField(default=0)
+    search_vector = SearchVectorField(null=True)
+
     def __str__(self):
         return self.title
     def get_absolute_url(self):
@@ -83,6 +87,7 @@ class Question(models.Model):
         indexes = [
             models.Index(fields=['created_at']),
             models.Index(fields=['likes_count']),
+            GinIndex(fields=['search_vector']),
         ]
         #вместо этого можно использовать db_index=True в likes_count
 
@@ -164,3 +169,22 @@ def decrement_answer_count(sender, instance, **kwargs):
     if instance.question.answers_number > 0:
         instance.question.answers_number -= 1
         instance.question.save()
+
+
+@receiver(post_save, sender=Question)
+def update_search_vector(sender, instance, **kwargs):
+    # Проверяем, если update_fields не передан или пустой, пропускаем
+    if kwargs.get('update_fields') is None or 'search_vector' in kwargs.get('update_fields', []):
+        return  # Избегаем повторного вызова для поля search_vector
+
+    # Отключаем сигнал перед сохранением
+    post_save.disconnect(update_search_vector, sender=Question)
+
+    try:
+        # Обновляем только search_vector
+        instance.search_vector = SearchVector('title', 'text')  # Используйте нужные поля
+        instance.save(update_fields=['search_vector'])
+    finally:
+        # Включаем сигнал обратно
+        post_save.connect(update_search_vector, sender=Question)
+
